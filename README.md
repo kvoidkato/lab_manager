@@ -70,6 +70,8 @@ This function is robust. It can update **all** detected Venvs in the current dir
 
 ## 🤝 Contribution
 
+*In short, to use the lab manager, click the lab.exe file and proceed.*
+
 This project is part of the UNIOSUN Software Engineering curriculum. Contributions or suggestions for improvement are welcome! Feel free to fork the repository and submit pull requests.
 
 ---
