@@ -5,6 +5,7 @@ import sys
 import time
 import ctypes
 import os
+import math
 
 config_file = 'plem.yaml'
 
@@ -90,14 +91,30 @@ def check_tool_availability(tool_name, command_to_check):
         print(f"Please install {tool_name} or remove this dependency from the YAML file.")
         return False
 
-def is_app_installed(app_name, check_command):
-    print(f"Checking if {app_name} is already installed...")
+def is_choco_package_installed(package_name):
+    print(f"Checking Chocolatey for package: {package_name}...")
     try:
-        subprocess.run(check_command, shell=True, check=True,  capture_output=True,text=True)
-        print(f"{app_name} is already installed. Skipping installation.")
-        return True
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        print(f"{app_name} not found. Proceeding with installation.")
+        result = subprocess.run(
+            ['choco', 'list', package_name],
+            capture_output=True,
+            text=True,
+            check=False 
+        )
+        if result.returncode != 0:
+            print(f"Error running 'choco list': {result.stderr.strip()}")
+            return False
+        target_entry = f"{package_name}"
+        for line in result.stdout.splitlines():
+            if line.strip().lower().startswith(target_entry.lower()):
+                print(f"Package '{package_name}' found in Chocolatey local list.")
+                return True
+        print(f"Package '{package_name}' not found in Chocolatey local list.")
+        return False
+    except FileNotFoundError:
+        print("Error: 'choco' command not found. Cannot check package status.")
+        return False
+    except Exception as e:
+        print(f"An unexpected error occurred while checking Chocolatey: {e}")
         return False
 
 def is_module_installed(module_name):
@@ -144,13 +161,13 @@ def setup_python_dependencies(config, venv_int):
     execute_command(command, command_type="Pip Installation")
 
 
+def is_app_installed(app_package_id):
+    return is_choco_package_installed(app_package_id)
+
 def setup_system_tools(config):
     tools = config.get('system_tools', {})
     current_os = platform.system().lower()
     system_commands = tools.get(current_os, [])
-    if not system_commands:
-        print(f"No system tools defined for OS: {current_os.capitalize()}. Skipping.")
-        return
     manager_check = {
         'windows': ('choco', 'choco -v'),
         'darwin': ('brew', 'brew --version'),
@@ -162,22 +179,17 @@ def setup_system_tools(config):
             print("Skipping system tool setup due to missing package manager.")
             return
     print(f"\n Installing System Tools for {current_os.capitalize()} ")
-    app_check_map = {
-        'visualstudiocode': ('VS Code', 'code --version'),
-        'node': ('Node.js', 'node -v'),
-    }
     for command in system_commands:
         should_skip = False
-        for keyword, (app_name, check_cmd) in app_check_map.items():
-            if keyword in command.lower():
-                if is_app_installed(app_name, check_cmd):
-                    should_skip = True
-                break
-        if not should_skip:
+        if current_os == 'windows' and command.strip().lower().startswith("choco install"):
+            package_part = command.split("choco install", 1)[-1].strip()
+            choco_package_id = package_part.split(' ', 1)[0].strip()
+            if is_choco_package_installed(choco_package_id):
+                should_skip = True
+        if should_skip:
+            print(f"Skipping execution of: {command} (Already installed)")
+        else:
             execute_command(command, command_type="System Tool Setup")
-
-
-
 def main():
     print("="*40)
     print(f"    PLEM: Py-Lab Environment Manager    ")

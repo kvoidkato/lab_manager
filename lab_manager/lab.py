@@ -8,6 +8,32 @@ import ctypes
 os.system("title Lab Setup Manager - UNIOSUN Software Engineering")
 folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 
+def is_choco_package_installed(package_name):
+    print(f"Checking Chocolatey for package: {package_name}...")
+    try:
+        result = subprocess.run(
+            ['choco', 'list', package_name],
+            capture_output=True,
+            text=True,
+            check=False 
+        )
+        if result.returncode != 0:
+            print(f"Error running 'choco list': {result.stderr.strip()}")
+            return False
+        target_entry = f"{package_name}"
+        for line in result.stdout.splitlines():
+            if line.strip().lower().startswith(target_entry.lower()):
+                print(f"Package '{package_name}' found in Chocolatey local list.")
+                return True
+        print(f"Package '{package_name}' not found in Chocolatey local list.")
+        return False
+    except FileNotFoundError:
+        print("Error: 'choco' command not found. Cannot check package status.")
+        return False
+    except Exception as e:
+        print(f"An unexpected error occurred while checking Chocolatey: {e}")
+        return False
+
 def find_system_python():
     system_python_path = shutil.which("python")
     if system_python_path:
@@ -258,20 +284,17 @@ def show_env_status():
                 venvs.append(folder)
         if not venvs:
             print("No venv is present inside the root folder. Skipping...")
-            input("\nPress ENTER key to continue...")
-            return
         for venv in venvs:
             venv_path_s = os.path.join(venv, 'scripts', 'python.exe')
             freeze_command = [venv_path_s, '-m', 'pip', 'freeze']
             print(f"Listing installed packages for '{venv}'...\n")
             pip_result = subprocess.run([venv_path_s, '-m', 'pip', '--version'], capture_output=True,text=True,check=True)
-            print(f"Pip version: {pip_result.stdout}")
+            print(f"Pip version for {venv}: {pip_result.stdout}")
             try:
                 freeze_result = subprocess.run(freeze_command,capture_output=True,text=True,check=True)
                 packages_to_upgrade = freeze_result.stdout.strip().splitlines()
                 if not packages_to_upgrade:
-                    print("No packages found in the virtual environment to upgrade.")
-                    return
+                    print("No packages found in the virtual environment.")
                 print(f"Found {len(packages_to_upgrade)} packages in {venv}")
                 for line in packages_to_upgrade:
                     package_name = line.split('==')[0].strip()
@@ -301,7 +324,10 @@ def show_env_status():
             pass
         input("\nPress ENTER key to continue...")
     else:
-        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, "el_scan.py", None, 1)
+        print("Relaunching as administrator to perform system scan...")
+        script_path = os.path.abspath(sys.argv[0])
+        admin_args = "--scan"
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", script_path, admin_args, None, 1)
         input("\nPress ENTER key to continue...")
 
 def install_packages():
@@ -311,12 +337,24 @@ def install_packages():
     if venv_to_install_to in os.listdir(folder_path):
         venv_to_install_to_py_path = os.path.join(venv_to_install_to, 'scripts', 'python.exe')
         install_cmd = [venv_to_install_to_py_path, "-m", "pip", "install"] + packages_to_install
-        print(f"Installing {len(packages_to_install)} via pip...")
+        print(f"Installing {len(packages_to_install)} packages via pip...")
         execute_command(install_cmd, "Package Installation")
     else:
         print("ERROR: Venv not found")
         print(f"{venv_to_install_to} not found in {os.path.dirname(__file__)}")
     input("\nPress ENTER key to continue...")
+
+def install_apps():
+    app_to_install = input("\033[92mEnter app name: \033[0m")
+    apps_to_install = app_to_install.split(" ")
+    print(f"Installing {len(apps_to_install)} apps via choco...")
+    for app in apps_to_install:
+        if is_choco_package_installed(app):
+            print(f'Package {app} is installed. Skipping...')
+            continue
+        install_cmd = ['choco', 'install', app]
+        execute_command(install_cmd, 'App/Tool Installation')
+        print("\n")
 
 def help():
     green = '\033[92m'  
@@ -334,7 +372,7 @@ def help():
         for char in output_line:
             sys.stdout.write(char)
             sys.stdout.flush()
-            time.sleep(0.003)
+            time.sleep(0.001)
         sys.stdout.write('\n')
     input("\nPress ENTER key to continue...")
 
@@ -363,13 +401,15 @@ def menu():
         print("                 |                                                                       |")
         print("                 |   [7] Install Packages                                                |")
         print("                 |                                                                       |")
+        print("                 |   [8] Install Applications/Tools                                      |")
+        print("                 |                                                                       |")
         print("                 |   [H] Help                                                            |")
         print("                 |                                                                       |")
         print("                 |   [0] Exit Manager                                                    |")
         print("                 |                                                                       |")
         print("                 |_______________________________________________________________________|")
 
-        choice = input("\033[92m\n\n                 Enter task number (0, 1, 2, 3, 4, 5, 6, 7, H): \033[0m").lower().strip()
+        choice = input("\033[92m\n\n                 Enter task number (0, 1, 2, 3, 4, 5, 6, 7, 8, H): \033[0m").lower().strip()
 
         if choice == "1":
             subprocess.run(["cls"], shell=True)
@@ -405,6 +445,11 @@ def menu():
             subprocess.run(["cls"], shell=True)
             time.sleep(1)
             install_packages()
+        elif choice == "8":
+            subprocess.run(["cls"], shell=True)
+            time.sleep(1)
+            install_apps()
+            input("\nPress ENTER to continue...")
         elif choice == "h":
             subprocess.run(["cls"], shell=True)
             time.sleep(1)
@@ -419,4 +464,7 @@ def menu():
             subprocess.run(["cls"], shell=True)
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1].lower() == '--scan':
+        show_env_status()
+        sys.exit(0)
     menu()

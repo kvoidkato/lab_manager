@@ -6,13 +6,15 @@
 	
 	DATE CREATED: Tuesday, 2nd December, 2025
 
-	VERSION: v1.0.3
+	VERSION: v1.1.2
 
-	LAST UPDATE: 05-12-2025: 10:24
+	LAST UPDATE: 15-12-2025: 20:25
 
 	VERSION HISTORY: v1.0.0 [02-12-2025: 15:49]
 			 v1.0.1 [03-12-2025: 23:02]
 			 v1.0.2 [04-12-2025: 21:34]
+			 v1.0.3 [05-12-2025: 10:24]
+			 v1.1.1 [15-12-2025: 20:01]
 
 	USAGE:
 		PLEM SETUP: 
@@ -43,6 +45,18 @@
 
 			PLEM Setup is designed to install python dependencies/packages first and then install tools/apps,
 			the process is run via the 'setup.bat' and 'plem.py', so do not alter any of the files.
+
+			To edit the packages/python dependencies or apps to be installed, open the 'plem.yaml' configuration
+			file and check for the list 'python_dependencies', it should be something like this:
+				>> python_dependencies:
+				>>  pip_install:
+				>>   - numpy==1.26.2
+			Let's say you want to add 'django' to the list, this is how you do it, below 'pip_install' with the
+			correct indentations:
+				>>  - django
+			You can add the version as seen for 'numpy'.
+			Similar steps are to be taken for adding 'necessary apps/tools' to be installed during the PLEM Setup
+			by appending the apps to the 'system_tools' dictionary.
 
 		GIT CLONING:
 			>> Requires internet connection!
@@ -84,6 +98,14 @@
 			with a whitespace like this
 				>> Enter package name: django pandas numpy requests
 				>> Installing 4 packages via pip...
+
+		INSTALLING APPS/TOOLS:
+			>> Requires internet connection!
+			This option is to install tools directly from the command line interface of the Lab Setup Manager without
+			needing to manually install via browser. Multiple apps can be installed by separating with a whitespace like
+			this
+				>> Enter app name: visualstudiocode codeblocks git
+				>> Installing 3 apps via choco...
 
 		HELP MENU:
 			A manual of the lab manager executable.
