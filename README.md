@@ -1,4 +1,3 @@
-# lab_manager
 # 🔬 Lab Setup Manager - UNIOSUN Software Engineering
 
 ## Overview
@@ -7,9 +6,10 @@ The **Lab Setup Manager** is a Python-based utility designed to streamline the s
 
 This script is primarily intended for **Windows environments** due to its reliance on `ctypes.windll.shell32` for administrative checks and Windows-specific commands like `cls`, `sfc`, and `DISM`.
 
-## ✨ Key Features
+### ✨ Key Features
 
 * **Setup Automation:** Execute the main `setup.bat` file to perform initial PLEM (Python, Library, Environment, Manager) installation and configuration.
+* **App Installation (New):** Install applications and tools easily using the **Chocolatey** package manager for Windows.
 * **Git Management:** Clone single or multiple Git repositories into a dedicated `git_repos` directory.
 * **Venv Management:**
     * **Creation:** Easily create new Python Virtual Environments.
@@ -35,17 +35,18 @@ This script is primarily intended for **Windows environments** due to its relian
 3.  **Navigate:** Use the numbered menu options to select the desired action.
 
 
-## 📋 Menu Options
+### 📋 Menu Options
 
 | Option | Description | Notes |
 | :---: | :--- | :--- |
-| **1** | **Run PLEM Setup** | Executes an external `setup.bat` script |
+| **1** | **Run PLEM Setup** | Executes an external `setup.bat` script (assumed to handle core tool and app installation). |
 | **2** | **Clone Git Repository** | Clones one or more repositories into a sub-folder named `git_repos`. |
 | **3** | **Create Virtual Environment (Venv)** | Prompts for a Venv name and creates it using `python -m venv`. |
 | **4** | **Sort Directories/Files** | Organizes files (e.g., `.pdf`, `.jpg`, `.zip`) in a specified path into dedicated folders. |
 | **5** | **Update Venv Dependencies** | Upgrades PIP and all installed packages in a specified Venv or all Venvs. |
 | **6** | **Show Environment Status** | Checks for elevated permissions and runs system health checks (`sfc`, `DISM`) and version checks for Python and Git. |
 | **7** | **Install Packages** | Prompts for a Venv and package name(s) to install using `pip install`. |
+| **8** | **Install Applications (via Choco)** | **NEW:** Installs one or more Windows applications using the Chocolatey package manager. |
 | **H** | **Help** | Reads and displays the content of an external `readme.txt` file. |
 | **0** | **Exit Manager** | Terminates the script. |
 
@@ -68,9 +69,9 @@ This function is robust. It can update **all** detected Venvs in the current dir
 2. Uses `pip freeze` to list **all** installed packages.
 3. Iterates through the list and runs `pip install -U <package_name>` to upgrade each one individually.
 
-## 🤝 Contribution
+## ALL IN ALL, click the `lab.exe` file to start the application.
 
-*In short, to use the lab manager, click the lab.exe file and proceed.*
+## 🤝 Contribution
 
 This project is part of the UNIOSUN Software Engineering curriculum. Contributions or suggestions for improvement are welcome! Feel free to fork the repository and submit pull requests.
 
