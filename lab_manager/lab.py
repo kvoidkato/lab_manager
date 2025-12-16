@@ -8,6 +8,13 @@ import ctypes
 os.system("title Lab Setup Manager - UNIOSUN Software Engineering")
 folder_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 
+def is_choco_available():
+    try:
+        subprocess.run(['choco', '-v'], check=True, text=True, capture_output=True)
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False
+
 def is_choco_package_installed(package_name):
     print(f"Checking Chocolatey for package: {package_name}...")
     try:
@@ -345,8 +352,36 @@ def install_packages():
     input("\nPress ENTER key to continue...")
 
 def install_apps():
-    app_to_install = input("\033[92mEnter app name: \033[0m")
+    print("Checking if Chocolatey is installed...")
+    time.sleep(1)
+    if not is_choco_available():
+        print("\n!!! ERROR: Chocolatey ('choco' command) not found.")
+        print("Please ensure Chocolatey is installed and added to your system PATH.")
+        return
+    app_to_install = input("\033[92mEnter app name(s) (space-separated): \033[0m").strip()
+    if not app_to_install:
+        print("No app name provided. Exiting.")
+        return
     apps_to_install = app_to_install.split(" ")
+    force_upgrade = False
+    pre_installed_apps = [app for app in apps_to_install if is_choco_package_installed(app)]
+    if pre_installed_apps:
+        print(f"\nPackages already installed: {', '.join(pre_installed_apps)}")
+        choice = input("\033[92mDo you want to FORCE an upgrade/reinstall for these? (y/n): \033[0m").lower().strip()
+        if choice == 'y':
+            force_upgrade = True
+    print(f"\nStarting installation/upgrade of {len(apps_to_install)} app(s) via choco...")
+    for app in apps_to_install:
+        install_cmd = ['choco', 'install', app, '-y']
+        if is_choco_package_installed(app):
+            if force_upgrade:
+                install_cmd = ['choco', 'upgrade', app, '-y', '--allow-empty-checksums']
+                execute_command(install_cmd, f'Force Upgrade for {app}')
+            else:
+                print(f'\nPackage {app} is already installed. Skipping (run with "y" for force upgrade).')
+            continue
+        execute_command(install_cmd, f'App/Tool Installation for {app}')
+        print("\n")
     print(f"Installing {len(apps_to_install)} apps via choco...")
     for app in apps_to_install:
         if is_choco_package_installed(app):
