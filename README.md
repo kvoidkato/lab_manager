@@ -2,81 +2,82 @@
 
 ## Overview
 
-The **Lab Setup Manager** is a Python-based utility designed to streamline the setup and maintenance of development environments, particularly for students and staff in the UNIOSUN Software Engineering program. It automates common command-line tasks, making it easier to manage Git repositories, Python Virtual Environments (Venvs), package dependencies, and perform basic system health checks.
+The **Lab Setup Manager** is a portable, executable utility (packaged as `lab.exe` or `menu.exe`) designed to streamline the setup and maintenance of development environments for UNIOSUN Software Engineering students and staff.
 
-This script is primarily intended for **Windows environments** due to its reliance on `ctypes.windll.shell32` for administrative checks and Windows-specific commands like `cls`, `sfc`, and `DISM`.
+By consolidating common command-line tasks (Git, Venv, Pip, Chocolatey, and Windows diagnostics), this tool significantly reduces manual setup time and ensures environment consistency.
 
-### ✨ Key Features
+⚠️ **Compatibility Note:** This manager is specifically designed for **Windows environments**. Administrative privileges are required for running system scans (Option 6) and installing applications (Option 8).
 
-* **Setup Automation:** Execute the main `setup.bat` file to perform initial PLEM (Python, Library, Environment, Manager) installation and configuration.
-* **App Installation (New):** Install applications and tools easily using the **Chocolatey** package manager for Windows.
-* **Git Management:** Clone single or multiple Git repositories into a dedicated `git_repos` directory.
+## ✨ Key Features
+
+* **Portability:** Distributed as a single executable file (e.g., `lab.exe`).
+* **Setup Automation:** Executes a linked `setup.bat` script for initial PLEM (Python, Library, Environment, Manager) installation and core tool setup.
+* **App Installation (via Chocolatey):** Easily install multiple Windows applications and tools using the Chocolatey package manager.
 * **Venv Management:**
-    * **Creation:** Easily create new Python Virtual Environments.
+    * **Creation:** Automatically detects and uses the system Python executable to create new Virtual Environments.
     * **Dependency Update:** Upgrade PIP and all installed packages within a specified Venv, or all Venvs in the root directory.
     * **Package Installation:** Install new Python packages into a specified Venv.
-* **System Health Checks:** Run Windows system scans (`sfc /scannow`, `DISM /CheckHealth`) and check installed versions of **Python** and **Git**. (Requires elevated/administrator privileges).
-* **File Sorting:** Organize files in a specified directory into categorized folders (Documents, Images, Archives, Scripts, Videos, Applications).
+* **Git Management:** Clone single or multiple Git repositories into a dedicated `git_repos` directory.
+* **System Health Checks:** Check installed versions of **Python** and **Git**, list details of all local Venvs, and run powerful Windows system integrity scans (`sfc`, `DISM`).
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-1.  **Python:** Python must be installed and accessible via the system PATH.
-2.  **Git:** Git must be installed and accessible via the system PATH for cloning operations.
+1.  **Windows OS:** This tool is Windows-specific.
+2.  **Git:** Git must be installed and in your system's PATH for cloning operations.
+3.  **Chocolatey (Optional):** Chocolatey must be installed and in your system's PATH to use the Application Installation feature (Option 8).
 
 ### Usage
 
-1.  **Download:** Place the `menu.py` (and any associated scripts like `setup.bat` or `el_scan.py` if they exist) into your desired project directory.
-2.  **Run:** Execute the script from your command prompt:
+1.  **Download:** Place the compiled executable (e.g., `lab.exe`) and the supporting files (`setup.bat`, `readme.txt`, etc.) into your desired root directory.
+2.  **Run:** Double-click the executable or run it from the command prompt:
     ```bash
-    python menu.py
+    .\lab.exe
     ```
-3.  **Navigate:** Use the numbered menu options to select the desired action.
+3.  **Navigate:** Use the numbered menu options to select the desired task.
 
 
-### 📋 Menu Options
 
-| Option | Description | Notes |
+## 📋 Menu Options
+
+| Option | Description | Requirements |
 | :---: | :--- | :--- |
-| **1** | **Run PLEM Setup** | Executes an external `setup.bat` script (assumed to handle core tool and app installation). |
-| **2** | **Clone Git Repository** | Clones one or more repositories into a sub-folder named `git_repos`. |
-| **3** | **Create Virtual Environment (Venv)** | Prompts for a Venv name and creates it using `python -m venv`. |
-| **4** | **Sort Directories/Files** | Organizes files (e.g., `.pdf`, `.jpg`, `.zip`) in a specified path into dedicated folders. |
-| **5** | **Update Venv Dependencies** | Upgrades PIP and all installed packages in a specified Venv or all Venvs. |
-| **6** | **Show Environment Status** | Checks for elevated permissions and runs system health checks (`sfc`, `DISM`) and version checks for Python and Git. |
-| **7** | **Install Packages** | Prompts for a Venv and package name(s) to install using `pip install`. |
-| **8** | **Install Applications (via Choco)** | **NEW:** Installs one or more Windows applications using the Chocolatey package manager. |
-| **H** | **Help** | Reads and displays the content of an external `readme.txt` file. |
-| **0** | **Exit Manager** | Terminates the script. |
+| **1** | **Run PLEM Setup** | Requires `setup.bat` in the same directory. |
+| **2** | **Clone Git Repository** | Requires Git to be installed and in PATH. |
+| **3** | **Create Virtual Environment (Venv)** | Requires System Python in PATH. |
+| **4** | **Sort Directories/Files** | None (File management tool). |
+| **5** | **Update Venv Dependencies** | Requires a valid Venv. |
+| **6** | **Show Environment Status / System Scans** | Elevated (Admin) rights recommended for full scans (`sfc`, `DISM`). |
+| **7** | **Install Packages** | Requires a valid Venv and internet access. |
+| **8** | **Install Applications/Tools** | **NEW:** Requires Chocolatey (choco) installed and Elevated (Admin) rights. |
+| **H** | **Help** | Reads and displays content from `readme.txt`. |
+| **0** | **Exit Manager** | None. |
 
-## ⚙️ Functions Explained
+## ⚙️ Core Logic and Functions
 
-The core logic of the script is contained in several helper functions:
+### Installation & Checking
 
-### `execute_command` & `execute_check_command`
+* **`install_apps()`:** Prompts the user for one or more application names. It uses the new `is_choco_package_installed()` helper to check if an app is already present via Chocolatey before attempting the install, preventing redundant installations.
+* **`is_choco_package_installed(package_name)`:** Executes `choco list [package_name]` and parses the output to verify if the package is installed locally.
+* **`find_system_python()`:** Intelligently locates the global Python executable (`python` or `python3`) on the system, even if the current execution environment is the compiled executable, to ensure Venvs are created correctly.
 
-These functions are wrappers around Python's `subprocess.run()`. They provide consistent logging for command execution, success, and detailed error handling, ensuring users know exactly what command failed and why. `execute_check_command` specifically captures and prints the command's standard output and error log.
+### System Diagnostics
 
-### `is_admin`
-
-A Windows-specific function using the `ctypes` library to check if the script is currently running with **administrator (elevated) privileges**. This is crucial for running system diagnostic commands like `sfc` and `DISM`.
-
-### `update_venv_deps`
-
-This function is robust. It can update **all** detected Venvs in the current directory or a single specified Venv. For each Venv, it performs these steps:
-1. Upgrades **PIP** itself.
-2. Uses `pip freeze` to list **all** installed packages.
-3. Iterates through the list and runs `pip install -U <package_name>` to upgrade each one individually.
+* **`show_env_status()`:** This powerful function bundles all environmental checks:
+    1.  Checks Python and Git versions.
+    2.  Scans the current directory for Venvs and lists packages installed in each.
+    3.  If running as Administrator, prompts the user to run deep system integrity checks (`sfc /scannow` and `DISM /CheckHealth`).
+    4.  Handles the relaunch of the program with elevated privileges if needed to run the system scans.
 
 ## ALL IN ALL, click the `lab.exe` file to start the application.
 
 ## 🤝 Contribution
 
-This project is part of the UNIOSUN Software Engineering curriculum. Contributions or suggestions for improvement are welcome! Feel free to fork the repository and submit pull requests.
+This tool is a valuable asset to the UNIOSUN Software Engineering community. If you have suggestions for new features, bug fixes, or improvements, please submit an issue or open a pull request.
 
 ---
 
 ## 📜 License
 
-This project is open-source and available under the MIT license.
+This project is open-source and available under the MIT License.
