@@ -1,120 +1,84 @@
->>	==========================
->>	----LAB MANAGER MANUAL----
->>	==========================
+>>     ============================================================
+>>     ---- LAB MANAGER V2.0: OFFICIAL USER MANUAL             ----
+>>     ============================================================
 
-	DEVELOPER: Bello Royyan A.
-	
-	DATE CREATED: Tuesday, 2nd December, 2025
+    DEVELOPER: Bello Royyan A.
+    COMPANY:   UNIOSUN
+    DATE:      Monday, 22nd December, 2025
+    VERSION:   v1.0.0 (Official Release)
 
-	VERSION: v1.1.2
+    OVERVIEW:
+    The Lab Setup Manager is a professional-grade utility designed to
+    automate the configuration of Computing labs for FOCIT, UNIOSUN.
+    It streamlines software deployment, environment isolation, 
+    and portable project recovery.
 
-	LAST UPDATE: 15-12-2025: 20:25
+>>     --- SYSTEM PREREQUISITES ---
+    1. Internet Connection: Required for PLEM, Git, and Pip tasks.
+    2. Admin Privileges: Required for System Scans and Smart Backups.
+    3. Disk Space: Ensure sufficient space for backups and installs.
 
-	VERSION HISTORY: v1.0.0 [02-12-2025: 15:49]
-			 v1.0.1 [03-12-2025: 23:02]
-			 v1.0.2 [04-12-2025: 21:34]
-			 v1.0.3 [05-12-2025: 10:24]
-			 v1.1.1 [15-12-2025: 20:01]
+>>     --- KEY FUNCTIONALITIES ---
 
-	USAGE:
-		PLEM SETUP: 
-			>> Requires internet connection!
-			Setting up computer labs and systems software for Computing students in the
-			Faculty Of Computing and Information Technology, FOCIT, UNIOSUN. Runs automatically
-			with little supervision.
+    [01] PLEM SETUP:
+    The automated engine for lab deployment. Uses 'setup.bat' and 'plem.py'
+    to install dependencies defined in your configuration files.
 
-			Type choice [1] to run the 'setup.bat' file and 'plem.py' script and enter the required
- 			inputs.
+    [02] GIT INTEGRATION:
+    Simplifies repository deployment. Clones repos into the 'git_repos' 
+    directory using isolated subfolders.
 
-			Make sure to right-click the script and run as administrator, if not enabled, the
-			PLEM Setup will automatically request admin privileges. Press 'Yes' to continue setup.
+    [03] ENVIRONMENT SETUP:
+    Generates isolated virtual environments (venvs) to prevent global 
+    package pollution and ensure project dependency isolation.
 
-			To add new tools and apps for installation, navigate to the root directory of the exe file
-			and click the 'plem.yaml' file to view, add the packages you want to install via 'pip'
-			under the section 'python_dependencies', add the tools/apps to be installed via 'choco'
-			under the section 'system_tools'.
-			Be sure of the tool name before inputting it there, make sure you input the app name from
-			choco not just any name e.g to install vscode editor:
+    [04] FILE SORTER:
+    Automatically organizes cluttered directories. Files are categorized 
+    by extension into Documents, Images, Archives, Scripts, and Apps.
 
-				    >> choco install -y visualstudiocode
-				NOT
-				    >> choco install -y VS Code
-			
-			Errors can popup anytime due to several factors, ensure you have a strong internet connection
-			and enough disk space for installations, allow 'admin' privileges to run without interference.
+    [05] VENV MANAGEMENT:
+    Updates all installed packages within a specific venv or every venv 
+    found in the root directory (type 'all').
 
-			PLEM Setup is designed to install python dependencies/packages first and then install tools/apps,
-			the process is run via the 'setup.bat' and 'plem.py', so do not alter any of the files.
+    [06] SYSTEM HEALTH:
+    Runs elevated system checks including Python/Git versioning, SFC 
+    scans, and DISM health restoration to fix system images.
 
-			To edit the packages/python dependencies or apps to be installed, open the 'plem.yaml' configuration
-			file and check for the list 'python_dependencies', it should be something like this:
-				>> python_dependencies:
-				>>  pip_install:
-				>>   - numpy==1.26.2
-			Let's say you want to add 'django' to the list, this is how you do it, below 'pip_install' with the
-			correct indentations:
-				>>  - django
-			You can add the version as seen for 'numpy'.
-			Similar steps are to be taken for adding 'necessary apps/tools' to be installed during the PLEM Setup
-			by appending the apps to the 'system_tools' dictionary.
+    [07] PACKAGE MANAGER:
+    Allows for direct installation of specific Python packages into 
+    selected virtual environments via Pip.
 
-		GIT CLONING:
-			>> Requires internet connection!
-			To make it easier to clone repos from Github and other version control systems, the git cloning
-			feature was integrated to aid students to have little or no understanding of the git command line.
+    [08] TOOL INSTALLER:
+    Checks for Chocolatey and automates the installation or force-upgrade 
+    of system applications and tools.
 
-		VENV CREATION:
-			The venv feature is to make project isolation easier, by creating venvs for each project, python
-			dependency isolation is made possible and projects are a lot more accessible.
+    [09] NETWORK STATUS:
+    An internet address health checker that pings URLs to verify 
+    connection speed, status codes, and service availability.
 
-			NOTE: The PLEM Setup creates a venv in the process, so all python dependencies installed aren't
-			      globally installed.
+    [10] SAVE SNAPSHOT (New):
+    Scans the local directory for Git repositories and extracts their 
+    remote 'origin' URLs to 'projects.txt'.
 
-		FILE SORTING:
-			An helper script to help organize messy folders, the easy trick to navigate to the target folder
-			and copy the path from the top input field e.g if the target folder were the downloads folder:
+    [11] SELECTIVE BACKUP (V2.0 Core):
+    Performs a "Smart Backup." It compresses your project code but ignores 
+    heavy, reproducible data like 'venv', '.git', and junk folders.
 
-				  >>  C:\Users\FOCIT\Downloads
+    [12] ENVIRONMENT REBUILD (New):
+    Reads 'projects.txt' and 'info.json' to automatically clone 
+    repositories and recreate venvs on a fresh system.
 
-			The path should look like this, take note that the 'FOCIT' may be different depending on the current
-			user's name. The destination folders are already pre-programmed as:
+>>     --- DEBUGGING & LOGGING ---
+    V2.0 maintains a persistent diary in 'lab_manager_logs.log'.
+    - Type 'L' or 'log': View recent System Events or Errors.
+    - Type 'C' or 'clr': Safely clears the log file history.
+    - Type 'S': Activates direct Shell Access (CMD) within the manager.
 
-				  >> '.txt': 'Documents', '.pdf': 'Documents', '.doc': 'Documents',
-        			  >> '.docx': 'Documents', '.pptx': "Documents",'.gif': 'Images',
-        			  >> '.jpg': 'Images', '.png': 'Images', 'Archives', '.rar': 'Archives',
-        			  >> '.zip': '.exe': 'Applications', '.msi': 'Applications', '.apk': 'Applications',
-        			  >> '.py': 'Scripts', '.sh': 'Scripts', '.mkv': 'Videos', '.mp4': "Videos",
-		
-		UPDATING VENV DEPENDENCIES:
-			>> Requires internet connection!
-			Update all dependencies of a specific venv, to do this, input the name of the venv (ensure it is typed
-			correctly to prevent FileNotFoundError) or type in "all", this will automatically search the directory
-			where the menu.exe is placed for all venvs, then update all python dependencies present (perfect for 
-			up-to-date management of venvs for students).
+>>     --- TROUBLESHOOTING ---
+    - [WinError 5] Access Denied: Right-click lab.exe and 'Run as Administrator'.
+    - Connection Error: Verify internet and repository URL spelling.
+    - Tool Not Found: Verify Chocolatey or Git is installed in System PATH.
 
-		INSTALLING PACKAGES:
-			>> Requires internet connection!
-			This option is to install packages to the specified venv, you can install multiple packages by separating
-			with a whitespace like this
-				>> Enter package name: django pandas numpy requests
-				>> Installing 4 packages via pip...
-
-		INSTALLING APPS/TOOLS:
-			>> Requires internet connection!
-			This option is to install tools directly from the command line interface of the Lab Setup Manager without
-			needing to manually install via browser. Multiple apps can be installed by separating with a whitespace like
-			this
-				>> Enter app name: visualstudiocode codeblocks git
-				>> Installing 3 apps via choco...
-
-		HELP MENU:
-			A manual of the lab manager executable.
-
-		EXIT:
-			Option [0] exits the lab manager.
-
-
->>		=======================================
->>			     END OF MANUAL
->>		=======================================
-
+>>     ============================================================
+>>     ------------ END OF UNIOSUN SOFTWARE ENGINEERING -----------
+>>     ============================================================
