@@ -33,7 +33,6 @@
 ```bash
 # To run from source:
 python lab.py
-```
 
 ├── lab.exe              # Main compiled executable
 ├── lab.py (Hidden)      # Source code
@@ -42,16 +41,20 @@ python lab.py
 ├── setup.bat (Hidden)   # Logic for PLEM setup
 ├── plem.py   (Hidden)   # Core deployment engine
 └── README.txt           # User manual
-
-🛠️ Built With
+```
+## 🛠️ Built With
 Python 3.12 - Core logic.
 
 PyInstaller - Executable bundling.
 
 Windows API - Administrative and file attribute management.
 
-👤 Developer
+---
+
+## 👤 Developer
 Bello Royyan A. UNIOSUN Software Engineering Supporting FOCIT lab infrastructure since 2025.
 
-📄 License
+---
+
+## 📄 License
 This project is proprietary and developed for use at Osun State University (UNIOSUN). © 2025 Bello Royyan A. All rights reserved.
