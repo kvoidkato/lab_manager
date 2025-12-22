@@ -33,6 +33,7 @@
 ```bash
 # To run from source:
 python lab.py
+```
 
 ├── lab.exe              # Main compiled executable
 ├── lab.py (Hidden)      # Source code
