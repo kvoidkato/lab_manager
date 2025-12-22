@@ -1,83 +1,56 @@
-# 🔬 Lab Setup Manager - UNIOSUN Software Engineering
+# Lab Manager v1.0.0 🧪
 
-## Overview
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Python](https://img.shields.io/badge/python-3.12-green)
+![Platform](https://img.shields.io/badge/platform-Windows-lightgrey)
 
-The **Lab Setup Manager** is a portable, executable utility (packaged as `lab.exe` or `menu.exe`) designed to streamline the setup and maintenance of development environments for UNIOSUN Software Engineering students and staff.
+**Lab Manager** is a professional-grade utility designed to automate the configuration, management, and recovery of Computing Lab environments at **FOCIT, UNIOSUN**. It streamlines software deployment, isolates development environments, and provides a "Smart Backup" system for portable project recovery.
 
-By consolidating common command-line tasks (Git, Venv, Pip, Chocolatey, and Windows diagnostics), this tool significantly reduces manual setup time and ensures environment consistency.
-
-⚠️ **Compatibility Note:** This manager is specifically designed for **Windows environments**. Administrative privileges are required for running system scans (Option 6) and installing applications (Option 8).
+---
 
 ## ✨ Key Features
 
-* **Portability:** Distributed as a single executable file (e.g., `lab.exe`).
-* **Setup Automation:** Executes a linked `setup.bat` script for initial PLEM (Python, Library, Environment, Manager) installation and core tool setup.
-* **App Installation (via Chocolatey):** Easily install multiple Windows applications and tools using the Chocolatey package manager.
-* **Venv Management:**
-    * **Creation:** Automatically detects and uses the system Python executable to create new Virtual Environments.
-    * **Dependency Update:** Upgrade PIP and all installed packages within a specified Venv, or all Venvs in the root directory.
-    * **Package Installation:** Install new Python packages into a specified Venv.
-* **Git Management:** Clone single or multiple Git repositories into a dedicated `git_repos` directory.
-* **System Health Checks:** Check installed versions of **Python** and **Git**, list details of all local Venvs, and run powerful Windows system integrity scans (`sfc`, `DISM`).
+* **🚀 Automated PLEM Setup:** One-click deployment of lab dependencies via `setup.bat` and `plem.yaml`.
+* **📦 Smart Backups:** Compresses project source code while automatically excluding heavy, reproducible directories (like `venv`, `.git`, and `__pycache__`).
+* **🔄 Environment Rebuild:** Uses snapshots (`projects.txt` and `info.json`) to automatically re-clone repositories and recreate virtual environments on fresh systems.
+* **🛠️ System Health Suite:** Integrated SFC/DISM scans and network diagnostic tools to ensure lab PCs are running optimally.
+* **🧹 File Sorter:** Automatically organizes cluttered directories into categorized folders (Documents, Scripts, Apps, etc.).
+
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
+- **Windows 10/11**
+- **Python 3.12** (Recommended)
+- **Git** & **Chocolatey** (Will be auto-installed if listed in `plem.yaml`)
 
-1.  **Windows OS:** This tool is Windows-specific.
-2.  **Git:** Git must be installed and in your system's PATH for cloning operations.
-3.  **Chocolatey (Optional):** Chocolatey must be installed and in your system's PATH to use the Application Installation feature (Option 8).
+### Installation & Usage
+1. Download the latest release from the `dist` folder.
+2. Ensure `plem.yaml`, `setup.bat`, and `plem.py` are in the same directory as `lab.exe`.
+3. **Run as Administrator** to allow the tool to perform system repairs and install software.
 
-### Usage
+```bash
+# To run from source:
+python lab.py
 
-1.  **Download:** Place the compiled executable (e.g., `lab.exe`) and the supporting files (`setup.bat`, `readme.txt`, etc.) into your desired root directory.
-2.  **Run:** Double-click the executable or run it from the command prompt:
-    ```bash
-    .\lab.exe
-    ```
-3.  **Navigate:** Use the numbered menu options to select the desired task.
+├── lab.exe              # Main compiled executable
+├── lab.py (Hidden)      # Source code
+├── version_info.txt     # Metadata for Windows properties
+├── plem.yaml            # Tool configuration file
+├── setup.bat (Hidden)   # Logic for PLEM setup
+├── plem.py   (Hidden)   # Core deployment engine
+└── README.txt           # User manual
 
+🛠️ Built With
+Python 3.12 - Core logic.
 
+PyInstaller - Executable bundling.
 
-## 📋 Menu Options
+Windows API - Administrative and file attribute management.
 
-| Option | Description | Requirements |
-| :---: | :--- | :--- |
-| **1** | **Run PLEM Setup** | Requires `setup.bat` in the same directory. |
-| **2** | **Clone Git Repository** | Requires Git to be installed and in PATH. |
-| **3** | **Create Virtual Environment (Venv)** | Requires System Python in PATH. |
-| **4** | **Sort Directories/Files** | None (File management tool). |
-| **5** | **Update Venv Dependencies** | Requires a valid Venv. |
-| **6** | **Show Environment Status / System Scans** | Elevated (Admin) rights recommended for full scans (`sfc`, `DISM`). |
-| **7** | **Install Packages** | Requires a valid Venv and internet access. |
-| **8** | **Install Applications/Tools** | **NEW:** Requires Chocolatey (choco) installed and Elevated (Admin) rights. |
-| **H** | **Help** | Reads and displays content from `readme.txt`. |
-| **0** | **Exit Manager** | None. |
+👤 Developer
+Bello Royyan A. UNIOSUN Software Engineering Supporting FOCIT lab infrastructure since 2025.
 
-## ⚙️ Core Logic and Functions
-
-### Installation & Checking
-
-* **`install_apps()`:** Prompts the user for one or more application names. It uses the new `is_choco_package_installed()` helper to check if an app is already present via Chocolatey before attempting the install, preventing redundant installations.
-* **`is_choco_package_installed(package_name)`:** Executes `choco list [package_name]` and parses the output to verify if the package is installed locally.
-* **`find_system_python()`:** Intelligently locates the global Python executable (`python` or `python3`) on the system, even if the current execution environment is the compiled executable, to ensure Venvs are created correctly.
-
-### System Diagnostics
-
-* **`show_env_status()`:** This powerful function bundles all environmental checks:
-    1.  Checks Python and Git versions.
-    2.  Scans the current directory for Venvs and lists packages installed in each.
-    3.  If running as Administrator, prompts the user to run deep system integrity checks (`sfc /scannow` and `DISM /CheckHealth`).
-    4.  Handles the relaunch of the program with elevated privileges if needed to run the system scans.
-
-## ALL IN ALL, click the `lab.exe` file to start the application.
-
-## 🤝 Contribution
-
-This tool is a valuable asset to the UNIOSUN Software Engineering community. If you have suggestions for new features, bug fixes, or improvements, please submit an issue or open a pull request.
-
----
-
-## 📜 License
-
-This project is open-source and available under the MIT License.
+📄 License
+This project is proprietary and developed for use at Osun State University (UNIOSUN). © 2025 Bello Royyan A. All rights reserved.
